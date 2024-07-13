@@ -1,0 +1,24 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "6da0b636235316a179cc26bd098c033d"
+name = "fairplay"
+application_url = "https://drama-arrange-painting-ka.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "chowlive.myshopify.com"
+include_config_on_deploy = true
+
+[auth]
+redirect_urls = [
+  "https://drama-arrange-painting-ka.trycloudflare.com/auth/callback",
+  "https://drama-arrange-painting-ka.trycloudflare.com/auth/shopify/callback",
+  "https://drama-arrange-painting-ka.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false
