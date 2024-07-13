@@ -28,6 +28,7 @@ import BearAvatar from "@/components/shared/BearAvatar";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MdOutlineLogout } from "react-icons/md";
 import { shortenAddress } from "../../utils/helpers";
+import LayoutWrapper from "@/components/template/layout-wrapper";
 
 export default function Page() {
   const { user, authenticated } = usePrivy();
@@ -36,7 +37,7 @@ export default function Page() {
     useGlobalContext();
 
   return (
-    <>
+    <LayoutWrapper>
       <GlassContainer>
         <Tabs defaultValue="query">
           <TabsList className="grid w-full grid-cols-2 gap-2">
@@ -141,6 +142,6 @@ export default function Page() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </LayoutWrapper>
   );
 }

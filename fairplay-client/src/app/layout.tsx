@@ -1,17 +1,8 @@
-import { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 
 import LayoutWrapper from "@/components/template/layout-wrapper";
 import Providers from "@/providers/providers";
-
-export const metadata: Metadata = {
-  title: "Next.js Shopify App",
-  other: {
-    "shopify-api-key": process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || "",
-    "shopify-app-origins": process.env.NEXT_PUBLIC_HOST || "",
-  },
-};
 
 export default async function RootLayout({
   children,
@@ -26,10 +17,8 @@ export default async function RootLayout({
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" />
       </head>
       <body>
-        <Providers>
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </Providers>
-        ;{/* This is the recommended way to load script, but it doesn't work */}
+        <Providers>{children}</Providers>
+        {/* This is the recommended way to load script, but it doesn't work */}
         <Script
           src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
           strategy="beforeInteractive"

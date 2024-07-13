@@ -1,6 +1,5 @@
 "use client";
-import NavGroup from "../molecules/nav-group";
-import { ChevronDown, Github } from "lucide-react";
+import { Github } from "lucide-react";
 
 import { useMemo, useState } from "react";
 import { cn } from "../../../utils";
@@ -14,30 +13,6 @@ const Header = ({ className }: { className?: string }) => {
   const { user } = usePrivy();
   const { handleLogin, openAccountModal, address } = useGlobalContext();
 
-  const navs = useMemo(
-    () => [
-      {
-        title: "Feed",
-        value: "feed",
-        href: "/",
-        isActive: segment === 0,
-      },
-      {
-        title: "Proposals",
-        value: "proposals",
-        href: "/proposals",
-        isActive: segment === 1,
-      },
-      {
-        title: "Docs",
-        value: "docs",
-        href: "/documentation",
-        isActive: segment === 2,
-      },
-    ],
-    [segment]
-  );
-
   return (
     <div
       className={` flex justify-between items-center px-4 min-h-[70px] bg-transparent pr-8 ${className}`}
@@ -50,8 +25,6 @@ const Header = ({ className }: { className?: string }) => {
         <Github />
         <p className="">Source</p>
       </a>
-
-      {/* <NavGroup navs={navs} /> */}
 
       <Button
         className={cn("bg-zinc-800 text-white hover:bg-zinc-700 ")}
@@ -76,7 +49,7 @@ const Header = ({ className }: { className?: string }) => {
           )
         }
         onClick={user && address ? openAccountModal : handleLogin}
-        isDisabled={false}
+        isDisabled={true}
       >
         {!user ? "Connect" : "Connected"}
       </Button>
