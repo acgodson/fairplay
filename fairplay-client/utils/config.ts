@@ -1,3 +1,5 @@
+import { defineChain } from "viem";
+
 export const privyConfig = {
   loginMethods: ["google", "email"],
   appearance: {
@@ -11,3 +13,23 @@ export const privyConfig = {
   },
   walletConnectCloudProjectId: "957c795c4c86e7c46609c0cd4064fa00",
 };
+
+
+export const spicyTestnet = defineChain({
+  id: 88882,
+  name: "Chiliz Spicy Testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "CHZ",
+    symbol: "CHZ",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://spicy-rpc.chiliz.com/ "],
+      webSocket: ["wss://spicy-rpc-ws.chiliz.com/"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://testnet.chiliscan.com/" },
+  },
+});

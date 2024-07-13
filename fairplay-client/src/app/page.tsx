@@ -24,7 +24,6 @@ import {
   TabsTrigger,
 } from "../components/molecules/tabs";
 import QueryIntents from "@/components/organisms/query-intents";
-import Layout from "@/layout";
 import BearAvatar from "@/components/shared/BearAvatar";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MdOutlineLogout } from "react-icons/md";
@@ -37,7 +36,7 @@ export default function Page() {
     useGlobalContext();
 
   return (
-    <Layout>
+    <>
       <GlassContainer>
         <Tabs defaultValue="query">
           <TabsList className="grid w-full grid-cols-2 gap-2">
@@ -142,6 +141,6 @@ export default function Page() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Layout>
+    </>
   );
 }

@@ -11,8 +11,11 @@ import {
   createSmartAccountClient,
   LightSigner,
 } from "@biconomy/account";
-import { base, baseSepolia } from "viem/chains";
+import { ChainId } from "@biconomy/core-types";
+
 import { useDisclosure, useToast } from "@chakra-ui/react";
+
+import { spicyTestnet } from "../../utils/config";
 
 interface GlobalContextType {
   index: number;
@@ -34,7 +37,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [index, setIndex] = useState<number>(0);
-  const [network, switchNetwork] = useState<any | null>(baseSepolia);
+  const [network, switchNetwork] = useState<any | null>(spicyTestnet);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [smartAccount, setSmartAccount] =
     useState<BiconomySmartAccountV2 | null>(null);
@@ -53,19 +56,20 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       console.log("not privy embedded wallet found");
       return;
     }
-    await privyWallet.switchChain(network.id);
+    await privyWallet.switchChain(ChainId.CHILIZ_TESTNET);
     const provider = await privyWallet.getEthersProvider();
     const signer = provider?.getSigner() as LightSigner;
 
     console.log("signer, ", provider?.getSigner() as LightSigner);
     const smClient = await createSmartAccountClient({
       signer,
-      chainId: network.id,
+      chainId: ChainId.CHILIZ_TESTNET,
       bundlerUrl: `https://bundler.biconomy.io/api/v2/${network.id}/${
         process.env.NEXT_PUBLIC_BUNDLER_ID as string
       }`,
       biconomyPaymasterApiKey: process.env.NEXT_PUBLIC_PAYMASTER_KEY,
-      rpcUrl: "https://sepolia.base.org",
+      rpcUrl: "https://spicy-rpc.chiliz.com/",
+      entryPointAddress: process.env.CHILIZ_BUNDLER_ENTRYPOINT_ADDRESS,
     });
     console.log(smClient);
     return smClient;
