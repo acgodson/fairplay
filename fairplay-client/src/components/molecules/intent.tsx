@@ -8,7 +8,7 @@ import { cn } from "../../../utils";
 
 import { Alert, AlertDescription } from "../atoms/alert";
 import { Proposal } from "../organisms/docs-feed";
-import NewVoteIntent from "./new-vote";
+import NewVoteIntent from "./new-campaign";
 
 const IntentHead = ({ proposal }: { proposal: Proposal | any }) => {
   return (

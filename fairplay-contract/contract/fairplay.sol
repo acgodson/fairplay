@@ -94,15 +94,7 @@ contract FairPlay is Ownable(msg.sender) {
                 address(this),
                 totalAmount
             );
-        } else {
-            uint256 totalAmount = campaigns[campaignId].value *
-                customerHashes.length;
-            IERC20(campaigns[campaignId].rewardToken).transferFrom(
-                campaigns[campaignId].merchant,
-                address(this),
-                totalAmount
-            );
-        }
+        } 
 
         emit CampaignClosed(
             campaignId,
@@ -137,19 +129,12 @@ contract FairPlay is Ownable(msg.sender) {
         beneficiaries[campaignId][nullifier] = false;
 
         //TODO handle Token transfer
-        if (campaigns[campaignId].isNFT) {
-            IERC721(campaigns[campaignId].rewardToken).safeTransferFrom(
-                address(this),
-                msg.sender,
-                campaignId
-            );
-        } else {
-            IERC20(campaigns[campaignId].rewardToken).transfer(
-                msg.sender,
-                campaigns[campaignId].value
-            ); // Assuming 1 token as reward which is fixed for this demo
-        }
-
+        if (!campaigns[campaignId].isNFT) {
+           IERC20(campaigns[campaignId].rewardToken).transfer(
+            msg.sender,
+            campaigns[campaignId].value
+        );
+        } 
         emit RewardClaimed(campaignId, nullifier);
     }
 }

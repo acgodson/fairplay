@@ -15,7 +15,7 @@ interface Draft {
 const QueryIntents = ({ id: slug }: { id?: any }) => {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [fetching, setFetching] = useState(true);
-  const id = slug.params.id;
+  const id = slug?.params.id;
 
   useEffect(() => {
     console.log(slug.params.id);

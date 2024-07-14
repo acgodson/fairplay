@@ -69,7 +69,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       }`,
       biconomyPaymasterApiKey: process.env.NEXT_PUBLIC_PAYMASTER_KEY,
       rpcUrl: "https://spicy-rpc.chiliz.com/",
-      entryPointAddress: process.env.CHILIZ_BUNDLER_ENTRYPOINT_ADDRESS,
+      entryPointAddress:
+        process.env.NEXT_PUBLIC_CHILIZ_BUNDLER_ENTRYPOINT_ADDRESS,
     });
     console.log(smClient);
     return smClient;
