@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "../atoms/dialog";
 import { Divider } from "@chakra-ui/react";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface Draft {
   id: string;
@@ -33,16 +34,19 @@ const NewCapaign = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [rewardType, setRewardType] = useState<string>("erc20");
-  const [rewardAddress, setRewardAddress] = useState<string>("");
+  const [rewardAddress, setRewardAddress] = useState<string>(
+    process.env.NEXT_PUBLIC_FAIRPLAY_TOKEN || ""
+  );
   const [rewardValue, setRewardValue] = useState<string>("");
 
   const handleSubmit = () => {
     onSubmit({
+      shop: draft?.shop,
       type: rewardType,
       token: rewardAddress,
       value: rewardValue,
       id: docId,
-      endDate: draft?.endDate.toString() 
+      endDate: draft?.endDate.toString(),
     });
   };
 

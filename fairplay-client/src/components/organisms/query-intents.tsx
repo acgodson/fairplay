@@ -3,6 +3,7 @@ import { Box, Image } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import NewCapaign from "../molecules/new-campaign";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface Draft {
   id: string;
@@ -14,12 +15,14 @@ interface Draft {
 
 const QueryIntents = ({ id: slug }: { id?: any }) => {
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [submiting, setSubmiting] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const id = slug?.params.id;
+  const id = slug && slug.params.id ? slug.params.id : null;
+  const { startCampaign } = useGlobalContext();
 
   useEffect(() => {
-    console.log(slug.params.id);
     if (id) {
+      console.log(id);
       const fetchDraft = async () => {
         try {
           const response = await fetch(`/api/draft?id=${id}`, {
@@ -43,9 +46,16 @@ const QueryIntents = ({ id: slug }: { id?: any }) => {
     setFetching(false);
   }, [slug, fetching]);
 
-  const handleSubmit = async (e: any) => {
-    //let's submit
-    console.log(e)
+  const handleSubmit = async (payload: any) => {
+    setSubmiting(true);
+    console.log(payload);
+    try {
+      await startCampaign(payload.shop, payload.id, 604800);
+      setSubmiting(false);
+    } catch (e) {
+      setSubmiting(false);
+      console.log(e);
+    }
   };
 
   return (
