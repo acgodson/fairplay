@@ -49,7 +49,7 @@ const Header = ({ className }: { className?: string }) => {
           )
         }
         onClick={user && address ? openAccountModal : handleLogin}
-        isDisabled={true}
+        isDisabled={false}
       >
         {!user ? "Connect" : "Connected"}
       </Button>

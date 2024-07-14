@@ -56,7 +56,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       console.log("not privy embedded wallet found");
       return;
     }
-    await privyWallet.switchChain(ChainId.CHILIZ_TESTNET);
+    // await privyWallet.switchChain("0x15B92");
     const provider = await privyWallet.getEthersProvider();
     const signer = provider?.getSigner() as LightSigner;
 

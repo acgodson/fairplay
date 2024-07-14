@@ -9,6 +9,11 @@
 # testing
 /coverage
 
+contract/.deps
+contract/.prettierrc.json
+contract/.states
+contract/artifacts
+
 # next.js
 /.next/
 /out/
