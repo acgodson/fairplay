@@ -50,7 +50,7 @@ contract FairPlay is Ownable(msg.sender) {
         bool isNFT,
         uint256 value,
         uint256 duration
-    ) external onlyOwner {
+    ) external {
         uint256 campaignId = ++campaignCounter;
         campaigns[campaignId] = Campaign({
             id: campaignId,
@@ -75,7 +75,7 @@ contract FairPlay is Ownable(msg.sender) {
     function closeCampaign(
         uint256 campaignId,
         bytes32[] calldata customerHashes
-    ) external onlyOwner {
+    ) external {
         require(campaigns[campaignId].isActive, "Campaign is not active");
         campaigns[campaignId].isActive = false;
 
@@ -94,7 +94,7 @@ contract FairPlay is Ownable(msg.sender) {
                 address(this),
                 totalAmount
             );
-        } 
+        }
 
         emit CampaignClosed(
             campaignId,
@@ -130,11 +130,11 @@ contract FairPlay is Ownable(msg.sender) {
 
         //TODO handle Token transfer
         if (!campaigns[campaignId].isNFT) {
-           IERC20(campaigns[campaignId].rewardToken).transfer(
-            msg.sender,
-            campaigns[campaignId].value
-        );
-        } 
+            IERC20(campaigns[campaignId].rewardToken).transfer(
+                msg.sender,
+                campaigns[campaignId].value
+            );
+        }
         emit RewardClaimed(campaignId, nullifier);
     }
 }
