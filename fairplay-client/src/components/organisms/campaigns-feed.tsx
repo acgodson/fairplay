@@ -12,15 +12,6 @@ import contractAbi from "../../abi/FAIRPLAY.json";
 
 const contractAddress = process.env.NEXT_PUBLIC_FAIRPLAY_CONTRACT;
 
-export interface Proposal {
-  id: number;
-  documentID: string;
-  documentTitle: string;
-  method: string;
-  proposer: string;
-  status: string;
-}
-
 interface Campaign {
   id: number;
   cid: string;
@@ -33,27 +24,33 @@ interface Campaign {
   additionalData?: any;
 }
 
-const IntentsFeed = () => {
+const CampaignsFeed = () => {
   const [showNewIntent, setShowNewIntent] = useState(true);
-  const [proposals, setProposals] = useState<Proposal[] | any[] | null>(null);
+
   const [principal, setPrincipal] = useState<string | null>(null);
   const [token, setToken] = useState<string>("");
-  const [fetching, setFetching] = useState(true);
-  const { publicClient } = useGlobalContext();
+
+  const {
+    publicClient,
+    allCampaigns: campaigns,
+    fetching,
+  } = useGlobalContext();
 
   return (
     <Accordion type="single" collapsible className="w-full">
       {/* {showNewIntent && <NewIntent />} */}
 
-      {proposals &&
-        (proposals as Proposal[] | any[]).length > 0 &&
-        proposals.map((proposal, i) => (
+      {campaigns &&
+        (campaigns as Campaign[] | any[]).length > 0 &&
+        campaigns.map((campaign: any, i: number) => (
           <AccordionItem value={"0"} className="border-b-2" key={i}>
             <AccordionTrigger>
-              <IntentHead proposal={proposal} />
+              <IntentHead campaign={campaign} />
             </AccordionTrigger>
             <AccordionContent>
-              {proposals && <IntentBody onSubmit={() => {}} />}
+              {campaigns && (
+                <IntentBody products={campaign.metadata.products} shop={campaign.metadata.shop} onSubmit={() => {}} />
+              )}
             </AccordionContent>
           </AccordionItem>
         ))}
@@ -63,4 +60,4 @@ const IntentsFeed = () => {
   );
 };
 
-export default IntentsFeed;
+export default CampaignsFeed;

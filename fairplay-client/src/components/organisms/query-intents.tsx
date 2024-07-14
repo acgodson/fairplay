@@ -19,6 +19,7 @@ const QueryIntents = ({ id: slug }: { id?: any }) => {
   const [fetching, setFetching] = useState(true);
   const id = slug && slug.params.id ? slug.params.id : null;
   const { startCampaign } = useGlobalContext();
+  
 
   useEffect(() => {
     if (id) {

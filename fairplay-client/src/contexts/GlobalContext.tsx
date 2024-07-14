@@ -8,19 +8,22 @@ import React, {
 import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import {
   BiconomySmartAccountV2,
+  Bundler,
   createSmartAccountClient,
   LightSigner,
+  Paymaster,
   PaymasterMode,
 } from "@biconomy/account";
 import { ChainId } from "@biconomy/core-types";
 import {
   createPublicClient,
   encodeFunctionData,
+  fromBytes,
+  getAddress,
   http,
-  keccak256,
   toBytes,
+  toHex,
 } from "viem";
-import { mainnet } from "viem/chains";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 
 import { spicyTestnet } from "../../utils/config";
@@ -39,6 +42,9 @@ interface GlobalContextType {
   handleLogin: () => void;
   handleLogout: () => void;
   publicClient: any;
+  allCampaigns: any | null;
+  hash: string | null;
+  fetching: boolean
   startCampaign: (
     shop: string,
     docId: string,
@@ -55,7 +61,7 @@ interface Campaign {
   endTime: number;
   isActive: boolean;
   value: number;
-  additionalData?: any;
+  metadata?: any;
 }
 
 const contractAddress = process.env.NEXT_PUBLIC_FAIRPLAY_CONTRACT;
@@ -69,6 +75,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const [network, switchNetwork] = useState<any | null>(spicyTestnet);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [allCampaigns, setAllCampaigns] = useState<any | null>(null);
+  const [hash, setHash] = useState<string | null>(null);
+  const [fetching, setFetching] = useState<boolean>(false);
   const [smartAccount, setSmartAccount] =
     useState<BiconomySmartAccountV2 | null>(null);
   const {
@@ -90,17 +98,28 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     const provider = await privyWallet.getEthersProvider();
     const signer = provider?.getSigner() as LightSigner;
 
+    const bundler = new Bundler({
+      bundlerUrl: `https://bundler.biconomy.io/api/v2/${ChainId.CHILIZ_TESTNET}/${process.env.NEXT_PUBLIC_BUNDLER_ID}`,
+      chainId: ChainId.CHILIZ_TESTNET,
+      entryPointAddress:
+        process.env.NEXT_PUBLIC_CHILIZ_BUNDLER_ENTRYPOINT_ADDRESS,
+    });
+
+    const paymaster = new Paymaster({
+      paymasterUrl: `https://paymaster.biconomy.io/api/v1/${ChainId.CHILIZ_TESTNET}/${process.env.NEXT_PUBLIC_PAYMASTER_KEY}`,
+    });
+
     console.log("signer, ", provider?.getSigner() as LightSigner);
     const smClient = await createSmartAccountClient({
       signer,
       chainId: ChainId.CHILIZ_TESTNET,
-      bundlerUrl: `https://bundler.biconomy.io/api/v2/${network.id}/${
-        process.env.NEXT_PUBLIC_BUNDLER_ID as string
-      }`,
+      bundler: bundler,
+      bundlerUrl: `https://bundler.biconomy.io/api/v2/${network.id}/${process.env.NEXT_PUBLIC_BUNDLER_ID}`,
       biconomyPaymasterApiKey: process.env.NEXT_PUBLIC_PAYMASTER_KEY,
       rpcUrl: "https://spicy-rpc.chiliz.com/",
-      entryPointAddress:
-        process.env.NEXT_PUBLIC_CHILIZ_BUNDLER_ENTRYPOINT_ADDRESS,
+      entryPointAddress: "0x00000061FEfce24A79343c27127435286BB7A4E1",
+      paymaster: paymaster,
+      paymasterUrl: `https://paymaster.biconomy.io/api/v1/${ChainId.CHILIZ_TESTNET}/${process.env.NEXT_PUBLIC_PAYMASTER_KEY}`,
     });
     console.log(smClient);
     return smClient;
@@ -166,8 +185,9 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const getAllCampaigns = async (): Promise<Campaign[]> => {
+  const getAllCampaigns = async (): Promise<Campaign[] | null> => {
     try {
+      setFetching(true)
       const campaignCounter: any = await publicClient.readContract({
         address: contractAddress as `0x${string}`,
         abi: contractAbi,
@@ -184,30 +204,37 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           functionName: "campaigns",
           args: [i],
         });
+        if (campaignData) {
+          console.log("campaign data", campaignData);
+          const cid = campaignData[1];
+          const bytes = new Uint8Array(Buffer.from(cid.slice(2), "hex"));
+          const c = fromBytes(bytes, "string").replace(/\0/g, "");
 
-        console.log("campaign data", campaignData);
-        const cid = campaignData.cid;
-        const additionalData = await fetchDraft(cid);
+          const metadata = await fetchDraft(c);
 
-        const campaign: Campaign = {
-          id: campaignData.id.toNumber(),
-          cid: campaignData.cid,
-          merchant: campaignData.merchant,
-          rewardToken: campaignData.rewardToken,
-          isNFT: campaignData.isNFT,
-          endTime: campaignData.endTime.toNumber(),
-          isActive: campaignData.isActive,
-          value: campaignData.value.toNumber(),
-          additionalData,
-        };
+          const campaign: Campaign = {
+            id: Number(campaignData[0]),
+            cid: c,
+            merchant: campaignData[2],
+            rewardToken: campaignData[3],
+            isNFT: campaignData[4],
+            endTime: Number(campaignData[5]),
+            isActive: campaignData[7],
+            value: Number(campaignData[6]),
+            metadata,
+          };
 
-        campaigns.push(campaign);
+          campaigns.push(campaign);
+        }
+        console.log("all campaigns", campaigns);
+        setAllCampaigns(campaigns);
+        setFetching(false)
+        return campaigns;
       }
-      console.log("all campaigns", campaigns);
-      setAllCampaigns(campaigns);
-      return campaigns;
+      return null;
     } catch (error) {
-      setAllCampaigns("error");
+      setAllCampaigns([]);
+      setFetching(false)
       console.error("Error getting campaigns:", error);
       return [];
     }
@@ -222,26 +249,30 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       console.log("smart account not created");
       return;
     }
+    console.log("the smart account", smartAccount);
     try {
+      setHash(null);
       const toBytes32 = (value: string) => toBytes(value, { size: 32 });
+      const _shop = toBytes32(shop);
+      const _cid = toBytes32(docId);
 
       const data = encodeFunctionData({
         abi: contractAbi,
         functionName: "startCampaign",
         args: [
-          toBytes32(shop),
-          toBytes32(docId),
-          process.env.NEXT_PUBLIC_FAIRPLAY_TOKEN as `0x${string}`,
+          toHex(_shop),
+          toHex(_cid),
+          getAddress(process.env.NEXT_PUBLIC_FAIRPLAY_TOKEN!),
           false,
           0,
           duration,
         ],
       });
 
-      // from: await smartAccount.getAccountAddress(),
       const txn = {
         data,
         to: contractAddress as `0x${string}`,
+        from: await smartAccount.getAccountAddress(),
       };
 
       //send gasless Transaction
@@ -254,9 +285,11 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       if (userOpReceipt.success == "true") {
         console.log("UserOp receipt", userOpReceipt);
         console.log("Transaction receipt", userOpReceipt.receipt);
+        setHash(userOpReceipt.receipt.transactionHash);
+        return userOpReceipt.receipt;
       }
-    } catch (e) {
-      console.log("error starting campaign", e);
+    } catch (e: any) {
+      console.log("error starting campaign", e.message);
     }
   };
 
@@ -267,7 +300,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   }, [allCampaigns]);
 
   useEffect(() => {
-    console.log("wwww", wallets);
     if (wallets.length > 0) {
       const embeddedWallet = wallets.find(
         (wallet) => wallet.walletClientType === "privy"
@@ -301,7 +333,10 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         smartAccount,
         resetSmartAccount,
         publicClient,
+        hash,
         startCampaign,
+        allCampaigns,
+        fetching
       }}
     >
       {children}

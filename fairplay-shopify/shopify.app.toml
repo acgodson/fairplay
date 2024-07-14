@@ -2,7 +2,7 @@
 
 client_id = "6da0b636235316a179cc26bd098c033d"
 name = "fairplay"
-application_url = "https://drama-arrange-painting-ka.trycloudflare.com"
+application_url = "https://reporters-surplus-tourism-mind.trycloudflare.com"
 embedded = true
 
 [build]
@@ -12,9 +12,9 @@ include_config_on_deploy = true
 
 [auth]
 redirect_urls = [
-  "https://drama-arrange-painting-ka.trycloudflare.com/auth/callback",
-  "https://drama-arrange-painting-ka.trycloudflare.com/auth/shopify/callback",
-  "https://drama-arrange-painting-ka.trycloudflare.com/api/auth/callback"
+  "https://reporters-surplus-tourism-mind.trycloudflare.com/auth/callback",
+  "https://reporters-surplus-tourism-mind.trycloudflare.com/auth/shopify/callback",
+  "https://reporters-surplus-tourism-mind.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

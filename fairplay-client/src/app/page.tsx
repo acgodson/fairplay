@@ -29,6 +29,7 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 import { MdOutlineLogout } from "react-icons/md";
 import { shortenAddress } from "../../utils/helpers";
 import LayoutWrapper from "@/components/template/layout-wrapper";
+import CampaignsFeed from "@/components/organisms/campaigns-feed";
 
 export default function Page() {
   const { user, authenticated } = usePrivy();
@@ -50,7 +51,9 @@ export default function Page() {
           <TabsContent
             className="rounded-2xl bg-[#F8F8F7] p-4"
             value="feed"
-          ></TabsContent>
+          >
+            <CampaignsFeed />
+          </TabsContent>
         </Tabs>
       </GlassContainer>
 

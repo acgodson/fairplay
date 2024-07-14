@@ -1,3 +1,5 @@
+import { defineChain } from "viem";
+
 export const privyConfig = {
   loginMethods: ["google", "email"],
   appearance: {

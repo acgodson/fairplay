@@ -53,6 +53,7 @@ const Header = ({ className }: { className?: string }) => {
       >
         {!user ? "Connect" : "Connected"}
       </Button>
+      
     </div>
   );
 };

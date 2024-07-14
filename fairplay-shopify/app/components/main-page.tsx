@@ -19,7 +19,6 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { doServerAction, doTokenExchange } from "../actions";
 import { Campaign } from "./campaign";
-// import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface Data {
   name: string;
@@ -208,7 +207,7 @@ export default function Home({ shop }: { shop: string }) {
         <div className="flex-1 overflow-auto p-4 md:mr-80">
           <CalloutCard
             title="Fairplay Campaigns"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+            illustration="https://fairplay-chiliz.vercel.app/title-logo.png"
             primaryAction={{
               id: "create-campaign",
               icon: PlusIcon,

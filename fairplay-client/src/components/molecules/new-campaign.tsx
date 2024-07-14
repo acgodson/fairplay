@@ -10,6 +10,8 @@ import {
 } from "../atoms/dialog";
 import { Divider } from "@chakra-ui/react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { Alert, AlertDescription } from "../atoms/alert";
+
 
 interface Draft {
   id: string;
@@ -38,6 +40,7 @@ const NewCapaign = ({
     process.env.NEXT_PUBLIC_FAIRPLAY_TOKEN || ""
   );
   const [rewardValue, setRewardValue] = useState<string>("");
+  const { hash } = useGlobalContext();
 
   const handleSubmit = () => {
     onSubmit({
@@ -60,6 +63,18 @@ const NewCapaign = ({
           {title}
         </Button>
       </DialogTrigger>
+
+      {hash && (
+        <a
+          href={`https://spicy-explorer.chiliz.com/tx/${hash}`}
+          target="_blank"
+          className="ml-5"
+        >
+          <Button className="bg-white-800 text-black hover:bg-white-700">
+            View in Exporer
+          </Button>
+        </a>
+      )}
 
       <DialogContent className="sm:max-w-[905px] bg-white sm:rounded-2xl rounded-2xl">
         <DialogHeader>
